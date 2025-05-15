@@ -50,4 +50,7 @@ public class Deposit extends JFrame{
         setUndecorated(true);
         setVisible(true);
     }
+    public static void main(String[] args) {
+        new Deposit("", "").setVisible(true);
+    }
 }

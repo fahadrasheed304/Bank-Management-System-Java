@@ -148,4 +148,8 @@ public class SignUpForm3 extends JFrame{
 
         setVisible(true);
     }
-}
+public static void main(String[] args) {
+        new SignUpForm3(38749).setVisible(true);
+    }
+}    
+

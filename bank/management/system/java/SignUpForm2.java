@@ -161,4 +161,7 @@ public class SignUpForm2 extends JFrame{
 
         setVisible(true);
     }
+    public static void main(String[] args) {
+        new SignUpForm2(23728).setVisible(true);
+    }
 }
