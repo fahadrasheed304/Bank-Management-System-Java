@@ -17,7 +17,7 @@ public class SignUpForm3 extends JFrame{
 
         setTitle("NEW ACCOUNT APPLICATION FORM - PAGE 3");
         setLayout(null);
-        setSize(800, 750); // Set a preferred size for the window
+        setSize(800, 750); 
         setLocationRelativeTo(null);
         
         headingTitle = new JLabel("APPLICATION FORM NO. " + formNo);
