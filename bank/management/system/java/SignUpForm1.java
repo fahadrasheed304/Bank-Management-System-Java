@@ -1,28 +1,26 @@
-package bank.management.system.java;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import com.toedter.calendar.JDateChooser;
+import java.sql.*;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+public class SignUpOne extends JFrame {
 
-
-public class SignUpForm1 extends JFrame {
     JLabel formNo, personDetails, name, fatherName, dob, gender, email, martial, pinCode, Address, city, State;
     JTextField nameTextField, fatherNameTextField, emailTextField, pinCodeTextField, addressTextField, cityTextField, StateTextField;
     JRadioButton male, female, married, unMarried, other;
     ButtonGroup genderGroup, maritalGroup;
     JDateChooser dateChooser;
     JLabel nameErrorLabel, fatherNameErrorLabel, emailErrorLabel, pinCodeErrorLabel, addressErrorLabel, cityErrorLabel, stateErrorLabel;
-    
-    SignUpForm1(String formno) {
-        
+
+    SignUpOne(String formno) {
         setTitle("AUTOMATED TELLER MACHINE");
         setLayout(null);
-        setSize(800, 750);
-        setLocationRelativeTo(null); 
-        
-        JScrollPane scrollPane = new JScrollPane();
-        add(scrollPane);
+        setSize(800, 800); // Set a preferred size for the window
+        setLocationRelativeTo(null); // Center the window on the screen
 
         Random ran = new Random();
         long random = (Math.abs(ran.nextLong() % 9000L) + 1000L);
@@ -208,9 +206,92 @@ public class SignUpForm1 extends JFrame {
         next.setFont(new Font("Times New Roman", Font.BOLD, 14));
         next.setBounds(620, 660, 80, 30);
         add(next);
+
+        next.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearErrorMessages();
+
+                boolean isValid = true;
+
+                // Validate Name, Father's Name, City, and State
+                if (!isValidText(nameTextField.getText())) {
+                    nameErrorLabel.setText("Name should contain only letters and spaces.");
+                    isValid = false;
+                }
+
+                if (!isValidText(fatherNameTextField.getText())) {
+                    fatherNameErrorLabel.setText("Father's Name should contain only letters and spaces.");
+                    isValid = false;
+                }
+
+                if (!isValidEmail(emailTextField.getText())) {
+                    emailErrorLabel.setText("Invalid email address.");
+                    isValid = false;
+                }
+
+                if (!isValidText(cityTextField.getText())) {
+                    cityErrorLabel.setText("City should contain only letters and spaces.");
+                    isValid = false;
+                }
+
+                if (!isValidText(StateTextField.getText())) {
+                    stateErrorLabel.setText("State should contain only letters and spaces.");
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    String dob = ((JTextField) dateChooser.getDateEditor().getUiComponent()).getText();
+                    String maritalStatus = married.isSelected() ? "Married" : unMarried.isSelected() ? "Un-Married" : "Other";
+
+                    Conn c = new Conn();
+                    String query = "INSERT INTO signupone ( name, father_name, dob, gender, email, marital, pin_code, address, city, state) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    setVisible(false);
+                    new SignUpThree(formno).setVisible(true);
+
+                    try (PreparedStatement pst = c.c.prepareStatement(query)) {
+                        pst.setString(1, nameTextField.getText());
+                        pst.setString(2, fatherNameTextField.getText());
+                        pst.setString(3, dob);
+                        pst.setString(4, male.isSelected() ? "Male" : female.isSelected() ? "Female" : "");
+                        pst.setString(5, emailTextField.getText());
+                        pst.setString(6, maritalStatus);
+                        pst.setString(7, pinCodeTextField.getText());
+                        pst.setString(8, addressTextField.getText());
+                        pst.setString(9, cityTextField.getText());
+                        pst.setString(10, StateTextField.getText());
+
+                        pst.executeUpdate();
+
+                        // Link to Signup2 after validation and data saving
+
+                        setVisible(false);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(SignUpOne.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+
     }
-    
- public static void main(String[] args) {
-        new SignUpForm1("").setVisible(true);
+
+    private boolean isValidText(String text) {
+        return text.matches("[a-zA-Z ]+");
+    }
+
+    private boolean isValidEmail(String email) {
+        return email.matches("^[a-zA-Z0-9_+&-]+(?:\\.[a-zA-Z0-9_+&-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
+    }
+
+    private void clearErrorMessages() {
+        nameErrorLabel.setText("");
+        fatherNameErrorLabel.setText("");
+        emailErrorLabel.setText("");
+        cityErrorLabel.setText("");
+        stateErrorLabel.setText("");
+    }
+
+    public static void main(String[] args) {
+        new SignUpOne("").setVisible(true);
     }
 }
