@@ -1,9 +1,9 @@
-
-package bank.management.system.java;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
 
-public class Login extends JFrame{
+public class Login extends JFrame implements ActionListener{
     JButton login, signup, clear;
     JTextField cardTextField;
     JPasswordField pinTextField;
@@ -48,16 +48,19 @@ public class Login extends JFrame{
         login = new JButton("SIGN IN");
         login.setBounds(300,300,100,30);
         login.setBackground(Color.GRAY);
+        login.addActionListener(this);
         add(login);
 
         clear = new JButton("CLEAR");
         clear.setBounds(430,300,100,30);
         clear.setBackground(Color.GRAY);
+        clear.addActionListener(this);
         add(clear);
 
         signup = new JButton("SIGN UP");
         signup.setBounds(300,350,230,30);
         signup.setBackground(Color.GRAY);
+        signup.addActionListener(this);
         add(signup);
 
         getContentPane().setBackground(Color.WHITE);
@@ -66,7 +69,48 @@ public class Login extends JFrame{
         setVisible(true);
         setLocation(350,200);
     }
-     public static void main(String[] args){
+
+
+    public void actionPerformed(ActionEvent actionEvent){
+        if (actionEvent.getSource() == clear) {
+            cardTextField.setText("");
+            pinTextField.setText("");
+        } else if (actionEvent.getSource() == signup) {
+            if (cardTextField.getText().isEmpty() || pinTextField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please enter all required fields.");
+                return;
+            } else {
+                setVisible(false);
+                new SignUpOne("").setVisible(true);
+            }
+        } else if (actionEvent.getSource() == login) {
+            Conn conn = new Conn();
+            String cardNumber = cardTextField.getText();
+            String pin = new String(pinTextField.getPassword());
+            String query = "SELECT * FROM login WHERE cardNumber = ? AND pin = ?";
+            try {
+                PreparedStatement ps = conn.c.prepareStatement(query);
+                ps.setString(1, cardNumber);
+                ps.setString(2, pin);
+                ResultSet rs = conn.s.executeQuery(query);
+                if (rs.next()){
+                    setVisible(true);
+                    new Transactions("").setVisible(true);
+                }else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Card Number or Pin.");
+                }
+            }catch (Exception e){
+                System.out.println(e);
+            }
+
+            if (cardNumber.isEmpty() || pin.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please enter all required fields.");
+                return;
+            }
+        }
+    }
+
+    public static void main(String[] args){
         new Login("").setVisible(true);
     }
 }
