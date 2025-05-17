@@ -1,22 +1,18 @@
-package bank.management.system.java;
-/**
- *
- * @author Fahad Rasheed
- */
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.util.Date;
 
-public class Deposit extends JFrame{
-    
+public class Deposit extends JFrame implements ActionListener{
+
     ImageIcon i1, i3;
     Image i2;
     JLabel image, text;
     JButton back, deposit;
     JTextField amount;
-    String pinNumber, accountType;
-    Deposit(String pinNumber, String accountType){
+    String pinNumber;
+    Deposit(String pinNumber){
         this.pinNumber = pinNumber;
-        this.accountType = accountType;
         setLayout(null);
 
         i1 = new ImageIcon(ClassLoader.getSystemResource("icons/atm.jpg"));
@@ -39,10 +35,12 @@ public class Deposit extends JFrame{
 
         deposit = new JButton("Deposit");
         deposit.setBounds(355, 485, 150, 30);
+        deposit.addActionListener(this);
         image.add(deposit);
 
         back = new JButton("Back");
         back.setBounds(355, 520, 150, 30);
+        back.addActionListener(this);
         image.add(back);
 
         setSize(900,900);
@@ -50,7 +48,33 @@ public class Deposit extends JFrame{
         setUndecorated(true);
         setVisible(true);
     }
+
+    public void actionPerformed(ActionEvent ae){
+        if (ae.getSource() == deposit){
+            String number = amount.getText();
+            Date date = new Date();
+            if(number.equals("")){
+                JOptionPane.showMessageDialog(null, "Please enter the amount you want to deposit");
+            }else {
+                try {
+                    Conn conn = new Conn();
+                    String query = "insert into bank (pin_number, transaction_type, transaction_date, amount) VALUES (?, ?, ?, ?)";
+                    conn.s.executeUpdate(query);
+                    JOptionPane.showMessageDialog(null, "Rs" + number + "Deposited Successfully");
+                    setVisible(false);
+                    new Transactions( pinNumber).setVisible(true);
+                }catch (Exception e){
+                    System.out.println(e);
+                }
+            }
+        }else if(ae.getSource() == back){
+            setVisible(false);
+            new Transactions(pinNumber).setVisible(true);
+        }
+    }
+
+
     public static void main(String[] args) {
-        new Deposit("", "").setVisible(true);
+        new Deposit("");
     }
 }
