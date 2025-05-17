@@ -1,24 +1,16 @@
-
-package bank.management.system.java;
-
-/**
- *
- * @author Fahad Rasheed
- */
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.*;
 
+public class Transactions extends JFrame implements ActionListener{
 
-public class Transactions extends JFrame {
-    
     private JButton deposit, withdraw, fastCash, miniStatement, BalanceInquiry, pinChange, Exit;
     private JLabel image, text;
     ImageIcon i1, i3;
     Image i2;
-    String pinNumber, accountType;
-    Transactions(String pinNumber, String accountType){
+    String pinNumber;
+    Transactions(String pinNumber){
         this.pinNumber = pinNumber;
-        this.accountType = accountType;
 
         setTitle("ATM Transactions");
         setLayout(null);
@@ -38,6 +30,7 @@ public class Transactions extends JFrame {
 
         deposit = new JButton("Deposit");
         deposit.setBounds(170, 415, 150, 30);
+        deposit.addActionListener(this);
         image.add(deposit);
 
         withdraw = new JButton("Withdraw");
@@ -46,22 +39,27 @@ public class Transactions extends JFrame {
 
         fastCash = new JButton("Fast Cash");
         fastCash.setBounds(170, 450, 150, 30);
+        fastCash.addActionListener(this);
         image.add(fastCash);
 
         miniStatement = new JButton("Mini Statement");
         miniStatement.setBounds(355, 450, 150, 30);
+        miniStatement.addActionListener(this);
         image.add(miniStatement);
 
         pinChange = new JButton("Pin Change");
         pinChange.setBounds(170, 485, 150, 30);
+        pinChange.addActionListener(this);
         image.add(pinChange);
 
         BalanceInquiry = new JButton("Balance Inquiry");
         BalanceInquiry.setBounds(355, 485, 150, 30);
+        BalanceInquiry.addActionListener(this);
         image.add(BalanceInquiry);
 
         Exit = new JButton("Exit");
         Exit.setBounds(355, 520, 150, 30);
+        Exit.addActionListener(this);
         image.add(Exit);
 
         setSize(900,900);
@@ -70,7 +68,22 @@ public class Transactions extends JFrame {
         setVisible(true);
     }
 
-public static void main(String[] args) {
-        new Transactions("", "").setVisible(true);
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == Exit) {
+            System.exit(0);
+        } else if (ae.getSource() == deposit) {
+            setVisible(false);
+            new Deposit(pinNumber).setVisible(true);
+        } else if (ae.getSource() == withdraw) {
+            setVisible(false);
+            new Withdraw(pinNumber).setVisible(true);
+        } else if (ae.getSource() == fastCash) {
+            setVisible(false);
+            new FastCash(pinNumber).setVisible(true);
+        }
+    }
+
+    public static void main(String[] args) {
+        new Transactions("").setVisible(true);
     }
 }
